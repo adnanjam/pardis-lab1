@@ -1,7 +1,7 @@
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-public class exercise41 {
+public class Exercise41 {
     public static void main(String[] args) throws InterruptedException {
 
         MySynchronizedClass mySynchronizedClass = new MySynchronizedClass();
