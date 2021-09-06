@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Exercise43 {
     public static void main(String[] args) {
@@ -20,7 +21,7 @@ public class Exercise43 {
         for (int i = 0; i < numberOfPhilosophers; i++) {
             Philosopher p = table.get(i);
             new Thread(
-                    p::eat
+                    p::eat, "Philosopher " + String.valueOf(i + 1)
             ).start();
         }
     }
@@ -28,23 +29,59 @@ public class Exercise43 {
     public static class Philosopher {
         Philosopher left_neighbour;
         Philosopher right_neighbour;
-        boolean myChopstick = false;
+        boolean myChopstickIsAvailable = true;
         boolean myChopstickIsLent = false;
         boolean otherChopstick = false;
+        final Object myChopstickMonitor = new Object();
+        final Object otherChopstickMonitor = new Object();
+        Random r = new Random();
 
-        public void eat() {
-
+        public void eat() throws InterruptedException {
+            while (true) {
+                getMyChopstick();
+                getOtherChopstick();
+                System.out.println(Thread.currentThread().getName() + " is eating.");
+                Thread.sleep(r.nextInt(1000));
+                releaseOtherChopstick();
+                releaseMyChopstick();
+            }
         }
 
-        public void getMyChopstick() {
-
+        public void getMyChopstick() throws InterruptedException {
+            synchronized (myChopstickMonitor) {
+                while (myChopstickIsLent) {
+                    myChopstickMonitor.wait();
+                }
+                myChopstickIsAvailable = false;
+            }
         }
 
         public void releaseMyChopstick() {
-
+            synchronized (myChopstickMonitor) {
+                myChopstickIsAvailable = true;
+                myChopstickMonitor.notify();
+            }
         }
 
         public void getOtherChopstick() {
+            Thread left = new Thread(
+                    () -> {
+                        left_neighbour.lendMyChopstick();
+                    }
+            );
+
+            Thread right = new Thread(
+                    () -> {
+                        right_neighbour.lendMyChopstick();
+                    }
+            );
+
+            left.start();
+            right.start();
+
+            synchronized (otherChopstickMonitor){
+
+            }
 
         }
 
