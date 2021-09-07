@@ -1,6 +1,15 @@
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Argument for starvation freedom
+ * ----------------------------------
+ * Since the monitor objects will be released in the same order as they are blocked
+ * it prevents the starvation. If we change to unblock order we will get starvation
+ * on some threads.
+ * Moreover, each thread can only hold to monitor objects for a limited time
+ * after that it will release the
+ */
 public class Exercise43 {
     public static void main(String[] args) {
         int numberOfPhilosophers = 5;
@@ -38,15 +47,15 @@ public class Exercise43 {
                 getNeighboursChopstick();
                 System.out.println(Thread.currentThread().getName() + " is eating.");
                 Thread.sleep(r.nextInt(1000));
-                releaseNeighboursChopstick();
                 releaseChopstick();
+                releaseNeighboursChopstick();
             }
         }
 
         public void getChopstick() throws InterruptedException {
             synchronized (chopstickMonitor) {
                 while (!chopstickIsAvailable) {
-                    chopstickMonitor.wait(r.nextInt(500));
+                    chopstickMonitor.wait();
                 }
                 chopstickIsAvailable = false;
             }
