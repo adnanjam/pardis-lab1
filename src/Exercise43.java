@@ -13,7 +13,6 @@ public class Exercise43 {
 
         // Set the neighbours of each philosopher
         for (int i = 0; i < numberOfPhilosophers; i++) {
-            table.get(i).left_neighbour = table.get((i - 1) % numberOfPhilosophers);
             table.get(i).right_neighbour = table.get((i + 1) % numberOfPhilosophers);
         }
 
@@ -26,77 +25,46 @@ public class Exercise43 {
         }
     }
 
+    // We assume that our chopstick is the one on the left so only the neighbour on the right is relevant.
     public static class Philosopher {
-        Philosopher left_neighbour;
-        Philosopher right_neighbour;
-        boolean myChopstickIsAvailable = true;
-        boolean myChopstickIsLent = false;
-        boolean otherChopstick = false;
-        final Object myChopstickMonitor = new Object();
-        final Object otherChopstickMonitor = new Object();
-        Random r = new Random();
+        public Philosopher right_neighbour;
+        private boolean chopstickIsAvailable = true;
+        private final Object chopstickMonitor = new Object();
+        private final Random r = new Random();
 
         public void eat() throws InterruptedException {
             while (true) {
-                getMyChopstick();
-                getOtherChopstick();
+                getChopstick();
+                getNeighboursChopstick();
                 System.out.println(Thread.currentThread().getName() + " is eating.");
                 Thread.sleep(r.nextInt(1000));
-                releaseOtherChopstick();
-                releaseMyChopstick();
+                releaseNeighboursChopstick();
+                releaseChopstick();
             }
         }
 
-        public void getMyChopstick() throws InterruptedException {
-            synchronized (myChopstickMonitor) {
-                while (myChopstickIsLent) {
-                    myChopstickMonitor.wait();
+        public void getChopstick() throws InterruptedException {
+            synchronized (chopstickMonitor) {
+                while (!chopstickIsAvailable) {
+                    chopstickMonitor.wait(r.nextInt(500));
                 }
-                myChopstickIsAvailable = false;
+                chopstickIsAvailable = false;
             }
         }
 
-        public void releaseMyChopstick() {
-            synchronized (myChopstickMonitor) {
-                myChopstickIsAvailable = true;
-                myChopstickMonitor.notify();
+        public void releaseChopstick() {
+            synchronized (chopstickMonitor) {
+                chopstickIsAvailable = true;
+                chopstickMonitor.notify();
             }
         }
 
-        public void getOtherChopstick() {
-            Thread left = new Thread(
-                    () -> {
-                        left_neighbour.lendMyChopstick();
-                    }
-            );
-
-            Thread right = new Thread(
-                    () -> {
-                        right_neighbour.lendMyChopstick();
-                    }
-            );
-
-            left.start();
-            right.start();
-
-            synchronized (otherChopstickMonitor){
-
-            }
-
+        public void getNeighboursChopstick() throws InterruptedException {
+            right_neighbour.getChopstick();
         }
 
         public void releaseOtherChopstick() {
 
         }
-
-        public void lendMyChopstick() {
-
-        }
-
-        public void getBackMyChopstick() {
-
-        }
-
     }
-
 }
