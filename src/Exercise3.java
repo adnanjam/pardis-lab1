@@ -1,6 +1,9 @@
 public class Exercise3 {
 
     /**
+     * Authors: Adnan Jamil Ahsan, Hovig Manjikian
+     * Date: 2021-09-07
+     * Lab 1 - DD2443
      * Guarded blocks
      * 1. Write a short program in which one thread increments an integer 1,000,000 times,
      * and a second thread prints the integer

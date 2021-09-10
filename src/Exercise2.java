@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 public class Exercise2 {
     /**
+     *
      * Simple synchronisation
      * 1. Figure out how to use the Java API to extract the number of physical threads available on the CPU you are running on.
      * 2. Write a short program in which n threads for increasing n, say n = 2, 6, 12,
