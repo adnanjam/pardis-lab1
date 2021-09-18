@@ -21,18 +21,22 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Exercise5 {
 
-    public  static void main(String[] args) throws InterruptedException{
+    public  static void main(String[] args) {
 
         Database db = new Database();
 
-        Thread t1 = new Thread(db::addUser);
-        Thread t2 = new Thread(db::removeUser);
+            Thread t1 = new Thread(db::addUser);
+            Thread t2 = new Thread(db::removeUser);
 
         t1.start();
         t2.start();
 
-        t1.join();
-        t2.join();
+        try {
+            t1.join();
+            t2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
 
@@ -50,45 +54,71 @@ class Database  implements Runnable {
     }
 
 
-    public void addUser(){
-        System.out.println(Thread.currentThread().getName() + " trying to add user...");
-        lock1.lock();
+    public void addUser() {
+        // 1. Try to get lock 1
+        // 2. Wait some time and then try to get Lock 2
+        // 3. Release lock 1 if lock 2 cannot be acquired and try again
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        while(true){
 
-        lock2.lock();
 
-        try{
+            System.out.println(Thread.currentThread().getName() + " trying to add user...");
+
+            lock1.lock();
+            chill(100);
+
+            if(lock2.tryLock()){
+                System.out.println(Thread.currentThread().getName() +" got lock 1");
+
+            }else{
+                lock1.unlock();
+                continue;
+            }
+
             users++;
             System.out.println(Thread.currentThread().getName()  + " added a user!");
-        }finally {
-            lock2.unlock();
-            lock1.unlock();
+            break;
         }
+
+        lock2.unlock();
+        lock1.unlock();
+
     }
 
-    public void removeUser(){
-        System.out.println(Thread.currentThread().getName() + " trying to remove user...");
-        lock2.lock();
+    public void removeUser() {
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        // 1. Try to get lock 2
+        // 2. Wait some time and try to get lock 1
+        // 3. Release lock 2 if lock 1 cannot be acquired and try again
+        while(true){
+
+            System.out.println(Thread.currentThread().getName() + " trying to remove user...");
+
+            lock2.lock();
+            chill(200);
+
+            if(lock1.tryLock()){
+                System.out.println(Thread.currentThread().getName() +" got lock 2");
+            }else{
+                lock2.unlock();
+                continue;
+            }
+
+            users++;
+            System.out.println(Thread.currentThread().getName()  + " remove a user!");
+            break;
         }
 
-        lock1.lock();
+        lock2.unlock();
+        lock1.unlock();
 
-        try{
-            users++;
-            System.out.println(Thread.currentThread().getName()  + " removed a user!");
-        }finally {
-            lock2.unlock();
-            lock1.unlock();
+    }
+
+    public void chill(int i) {
+        try {
+            Thread.sleep(i);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -11,6 +11,12 @@ import java.util.Random;
  * after that it will release the
  */
 public class Exercise43 {
+    /**
+     * Authors: Adnan Jamil Ahsan, Hovig Manjikian
+     * Date: 2021-09-07
+     * Lab 1 - DD2443
+     */
+
     public static void main(String[] args) {
         int numberOfPhilosophers = 5;
         ArrayList<Philosopher> table = new ArrayList<>(numberOfPhilosophers);
@@ -28,9 +34,13 @@ public class Exercise43 {
         // Let the philosophers start to eat in parallel
         for (int i = 0; i < numberOfPhilosophers; i++) {
             Philosopher p = table.get(i);
-            new Thread(
-                    p::eat, "Philosopher " + String.valueOf(i + 1)
-            ).start();
+            new Thread(() -> {
+                try {
+                    p.eat();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }, "Philosopher " + (i + 1)).start();
         }
     }
 
@@ -72,8 +82,8 @@ public class Exercise43 {
             right_neighbour.getChopstick();
         }
 
-        public void releaseOtherChopstick() {
-
+        public void releaseNeighboursChopstick() {
+            right_neighbour.releaseChopstick();
         }
     }
 }
