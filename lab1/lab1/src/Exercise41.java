@@ -2,6 +2,12 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 
 public class Exercise41 {
+    /**
+     * Authors: Adnan Jamil Ahsan, Hovig Manjikian
+     * Date: 2021-09-07
+     * Lab 1 - DD2443
+     */
+
     public static void main(String[] args) throws InterruptedException {
 
         MySynchronizedClass mySynchronizedClass = new MySynchronizedClass();

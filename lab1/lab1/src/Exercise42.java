@@ -7,6 +7,11 @@ import java.util.Random;
  * trying to access the box object simultaneously.
  */
 public class Exercise42 {
+    /**
+     * Authors: Adnan Jamil Ahsan, Hovig Manjikian
+     * Date: 2021-09-07
+     * Lab 1 - DD2443
+     */
     public static void main(String[] args) throws InterruptedException {
         Box box = new Box(2);
 

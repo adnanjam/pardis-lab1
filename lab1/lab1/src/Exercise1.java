@@ -1,7 +1,15 @@
 import java.io.*;
 import java.lang.Thread;
+// Authors: Adnan Jamil Ahsan, Hovig Manjikian
+// Date: 2021-09-07
+// Lab 1 - DD2443
 
 class Exercise1 {
+    /**
+     * Authors: Adnan Jamil Ahsan, Hovig Manjikian
+     * Date: 2021-09-07
+     * Lab 1 - DD2443
+     */
 
     public static void main(String[] args) {
         /**
