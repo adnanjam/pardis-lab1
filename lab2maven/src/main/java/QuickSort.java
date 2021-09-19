@@ -1,5 +1,7 @@
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class QuickSort {
     public static void main(String[] args) {
@@ -18,33 +20,22 @@ public class QuickSort {
 
     }
 
-    private static int[] generateArray(int n, int max) {
-        Random random = new Random();
-
-        int[] array = new int[n];
-
-        for (int i = 0; i < n; i++) {
-            array[i] = random.nextInt(max);
-        }
-
-        return array;
-    }
-
-    public static void quicksortSequential(int[] array) {
+    public static void quicksortSequential(int[] array){
         quicksortSequentialRecursion(array, 0, array.length - 1);
     }
+
+
 
     private static void quicksortSequentialRecursion(int[] array, int low, int high) {
 
         if (low >= 0 && high >= 0 && low < high) {
             int p = partition(array, low, high);
-
             quicksortSequentialRecursion(array, low, p - 1); // left side
             quicksortSequentialRecursion(array, p + 1, high); // right side
         }
     }
 
-    private static int partition(int[] array, int low, int high) {
+    public static int partition(int[] array, int low, int high) {
 
         int pivot = array[high]; // pivot must be the last element
         int i = low - 1; // pivot index
@@ -75,5 +66,17 @@ public class QuickSort {
             System.out.print(array[i] + (i == array.length - 1 ? "\n" : ", "));
 
         }
+    }
+
+    public static int[] generateArray(int n, int max) {
+        Random random = new Random();
+
+        int[] array = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            array[i] = random.nextInt(max);
+        }
+
+        return array;
     }
 }

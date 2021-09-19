@@ -19,11 +19,20 @@ class QuickSortTest {
 
     @BeforeEach
     void initAll() {
+
+        sortedOdd = new int[]{1, 21, 132, 400, 50000000};
+        unsortedOdd = new int[]{400, 50000000, 21, 1, 132};
+        reversedOdd = new int[]{50000000, 400, 132, 21, 1};
+
+        sortedEven = new int[]{21, 132, 400, 50000000};
+        unsortedEven = new int[]{400, 50000000, 21, 132};
+        reversedEven = new int[]{50000000, 400, 132, 21};
+
         Random r = new Random();
         for (int i = 0; i < n; i++) {
             arrayExtreme[i] = r.nextInt(Integer.MAX_VALUE);
         }
-        arrayExtremeSorted = arrayExtreme;
+        arrayExtremeSorted = arrayExtreme.clone();
         Arrays.sort(arrayExtremeSorted);
     }
 
