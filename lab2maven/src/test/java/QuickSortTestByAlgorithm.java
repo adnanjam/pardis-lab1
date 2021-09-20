@@ -45,7 +45,6 @@ class QuickSortTestByAlgorithm {
     }
 
     @Nested
-    @Order(1)
     @DisplayName("Sequential")
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class Sequential {
@@ -73,27 +72,33 @@ class QuickSortTestByAlgorithm {
 
         @Test
         @Order(4)
-        void SequentialUnsortedEven() {
+        void sequentialUnsortedEven() {
             QuickSort.quicksortSequential(unsortedEven);
             assertArrayEquals(resultEven, unsortedEven);
         }
         @Test
         @Order(5)
-        void SequentialReversedOdd() {
+        void sequentialReversedOdd() {
             QuickSort.quicksortSequential(reversedOdd);
             assertArrayEquals(resultOdd, reversedOdd);
         }
 
         @Test
         @Order(6)
-        void testSequentialReversedEven() {
+        void sequentialReversedEven() {
             QuickSort.quicksortSequential(reversedEven);
             assertArrayEquals(resultEven, reversedEven);
+        }
+
+        @Test
+        @Order(7)
+        void sequentialExtreme() {
+            QuickSort.quicksortSequential(arrayExtreme);
+            assertArrayEquals(arrayExtremeSorted, arrayExtreme);
         }
     }
 
     @Nested
-    @Order(2)
     @DisplayName("Executor")
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class Executor {
@@ -142,14 +147,13 @@ class QuickSortTestByAlgorithm {
 
         @Test
         @Order(7)
-        void testExecutorExtreme() {
+        void executorExtreme() {
             QuickSortExecutor.quicksortExecutor(arrayExtreme);
             assertArrayEquals(arrayExtremeSorted, arrayExtreme);
         }
     }
 
     @Nested
-    @Order(3)
     @DisplayName("Fork")
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class Fork {
@@ -195,27 +199,67 @@ class QuickSortTestByAlgorithm {
             QuickSortForks.quickSortForks(reversedEven);
             assertArrayEquals(resultEven, reversedEven);
         }
-    }
-
-    @Nested
-    @Order(4)
-    @DisplayName("Extreme")
-    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-    class Extreme {
 
         @Test
-        @Order(1)
-        void testSequentialExtreme() {
-            QuickSort.quicksortSequential(arrayExtreme);
+        @Order(7)
+        void forksExtreme() {
+            QuickSortForks.quickSortForks(arrayExtreme);
             assertArrayEquals(arrayExtremeSorted, arrayExtreme);
         }
 
+    }
 
+    @Nested
+    @DisplayName("Stream")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class Stream {
+
+        @Test
+        @Order(1)
+        void streamSortedOdd() {
+            QuickSortStreams.quicksortStream(sortedOdd);
+            assertArrayEquals(resultOdd, sortedOdd);
+        }
+
+        @Test
+        @Order(2)
+        void streamSortedEven() {
+            QuickSortStreams.quicksortStream(sortedEven);
+            assertArrayEquals(resultEven, sortedEven);
+        }
 
         @Test
         @Order(3)
-        void testForksExtreme() {
-            QuickSortForks.quickSortForks(arrayExtreme);
+        void streamUnsortedOdd() {
+            QuickSortStreams.quicksortStream(unsortedOdd);
+            assertArrayEquals(resultOdd, unsortedOdd);
+        }
+
+        @Test
+        @Order(4)
+        void streamUnsortedEven() {
+            QuickSortStreams.quicksortStream(unsortedEven);
+            assertArrayEquals(resultEven, unsortedEven);
+        }
+
+        @Test
+        @Order(5)
+        void streamReversedOdd() {
+            QuickSortStreams.quicksortStream(reversedOdd);
+            assertArrayEquals(resultOdd, reversedOdd);
+        }
+
+        @Test
+        @Order(6)
+        void streamReversedEven() {
+            QuickSortStreams.quicksortStream(reversedEven);
+            assertArrayEquals(resultEven, reversedEven);
+        }
+
+        @Test
+        @Order(7)
+        void streamExtreme() {
+            QuickSortStreams.quicksortStream(arrayExtreme);
             assertArrayEquals(arrayExtremeSorted, arrayExtreme);
         }
     }
