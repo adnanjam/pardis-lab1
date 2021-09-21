@@ -4,11 +4,12 @@ import java.util.concurrent.*;
 
 public class QuickSortForks {
 
+    public static Integer threads = Runtime.getRuntime().availableProcessors();
 
     public static void quickSortForks(int[] array) {
 
         QSFRT tasks = new QSFRT(array, 0, array.length - 1);
-        ForkJoinPool forkJoinPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+        ForkJoinPool forkJoinPool = new ForkJoinPool(threads);
         forkJoinPool.invoke(tasks);
 
     }

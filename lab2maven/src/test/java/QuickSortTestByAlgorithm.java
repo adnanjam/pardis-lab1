@@ -21,7 +21,7 @@ class QuickSortTestByAlgorithm {
     int[] unsortedEven = new int[4];
     int[] reversedEven = new int[4];
 
-    int n = 10000;
+    int n = 1000000;
     int[] arrayExtreme = new int[n];
     int[] arrayExtremeSorted = new int[n];
 
