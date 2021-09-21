@@ -1,7 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
-data  = pd.read_csv("results-local.csv",  header=None, names=['threads', 'n', "algo", "time"])
+data  = pd.read_csv("results-tegner.csv",  header=None, names=['threads', 'n', "algo", "time"])
 
 
 thread_counts = data["threads"][~data["threads"].duplicated()]
@@ -30,7 +31,7 @@ plt.title('Thread count = 3')
 # show a legend on the plot
 plt.legend()
 # Display a figure.
-plt.show()
+plt.savefig('tegner-by-input-size.png')
 
 
 
@@ -39,22 +40,20 @@ plt.show()
 # Y: time
 # n: constant
 
-plt.figure()
 
-n = 1000000
+for n in [1000, 10000, 100000, 1000000]:
+    plt.figure()
+    for algo in algos:
 
+        line = data[["time", "threads"]][(data.n == n) & (data.algo == algo)].astype(float)
+        plt.plot(line["threads"], np.log(line["time"]/1e9), label=algo)
 
-for algo in algos:
-    line = data[["time", "threads"]][(data.n == n) & (data.algo == algo)].astype(float)
-  
-    plt.plot(line["threads"], line["time"], label=algo)
-
-plt.xlabel('Threads')
-# Set the y axis label of the current axis.
-plt.ylabel('Time')
-# Set a title of the current axes.
-plt.title('Input size ' +str(n))
-# show a legend on the plot
-plt.legend()
-# Display a figure.
-plt.show()
+    plt.xlabel('Threads')
+    # Set the y axis label of the current axis.
+    plt.ylabel('Time')
+    # Set a title of the current axes.
+    plt.title('Input size ' +str(n))
+    # show a legend on the plot
+    plt.legend()
+    # Display a figure.
+    plt.savefig(f'tegner-by-threads-{n}.png')
