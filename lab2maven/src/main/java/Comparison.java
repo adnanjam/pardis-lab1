@@ -5,17 +5,17 @@ public class Comparison {
 
     public static void main(String[] args) {
         Random r = new Random();
-        StringBuilder results = new StringBuilder();
-
-        results.append(String.format("%-3s", "N")).append(String.format("%-10s", "Size")).append(String.format("%-15s", "Algorithm")).append(String.format("%-15s", "Time")).append('\n');
-        results.append(new String(new char[43]).replace("\0", "=")).append("\n");
-
 
         for (int numberOfThreads = 3; numberOfThreads <= Runtime.getRuntime().availableProcessors(); numberOfThreads++) {
             QuickSort.threads = numberOfThreads;
             QuickSortExecutor.threads = numberOfThreads;
             QuickSortForks.threads = numberOfThreads;
             QuickSortStreams.threads = numberOfThreads;
+
+            StringBuilder results = new StringBuilder();
+
+            results.append(String.format("%-3s", "N")).append(String.format("%-10s", "Size")).append(String.format("%-15s", "Algorithm")).append(String.format("%-15s", "Time")).append('\n');
+            results.append(new String(new char[43]).replace("\0", "=")).append("\n");
 
             int[][] unsorted = new int[][]{
                     new int[1000],
@@ -82,8 +82,8 @@ public class Comparison {
 //                System.out.println(results.toString());
 //                System.exit(0);
             }
+            System.out.println(results.toString());
         }
 
-        System.out.println(results.toString());
     }
 }
