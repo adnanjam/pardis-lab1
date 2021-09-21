@@ -30,8 +30,13 @@ public class QuickSort {
 
         if (low >= 0 && high >= 0 && low < high) {
             int p = partition(array, low, high);
-            quicksortSequentialRecursion(array, low, p - 1); // left side
-            quicksortSequentialRecursion(array, p + 1, high); // right side
+            if (p-1-low < (p+1) - high) {
+                quicksortSequentialRecursion(array, low, p - 1); // left side
+                quicksortSequentialRecursion(array, p + 1, high); // right side
+            } else {
+                quicksortSequentialRecursion(array, p + 1, high); // right side
+                quicksortSequentialRecursion(array, low, p - 1); // left side
+            }
         }
     }
 
