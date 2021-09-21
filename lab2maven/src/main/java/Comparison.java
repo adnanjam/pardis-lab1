@@ -47,7 +47,7 @@ public class Comparison {
                 QuickSort.quicksortSequential(temp);
                 end = System.nanoTime();
 
-                results.append(String.format("%-3s", numberOfThreads)).append(String.format("%-10s", temp.length)).append(String.format("%-15s", "Sequential")).append(String.format("%-15s", end - start)).append('\n');
+                System.out.println(String.format("%-3s", numberOfThreads) + String.format("%-10s", temp.length) + String.format("%-15s", "Sequential") + String.format("%-15s", end - start));
 
                 temp = unsorted[i].clone();
                 assert !Arrays.equals(temp, sorted[i]);
@@ -56,7 +56,7 @@ public class Comparison {
                 QuickSortExecutor.quicksortExecutor(temp);
                 end = System.nanoTime();
 
-                results.append(String.format("%-3s", numberOfThreads)).append(String.format("%-10s", temp.length)).append(String.format("%-15s", "Executor")).append(String.format("%-15s", end - start)).append('\n');
+                System.out.println(String.format("%-3s", numberOfThreads) + String.format("%-10s", temp.length) + String.format("%-15s", "Executor") + String.format("%-15s", end - start));
 
                 temp = unsorted[i].clone();
                 assert !Arrays.equals(temp, sorted[i]);
@@ -65,7 +65,7 @@ public class Comparison {
                 QuickSortForks.quickSortForks(temp);
                 end = System.nanoTime();
 
-                results.append(String.format("%-3s", numberOfThreads)).append(String.format("%-10s", temp.length)).append(String.format("%-15s", "Forks")).append(String.format("%-15s", end - start)).append('\n');
+                System.out.println(String.format("%-3s", numberOfThreads) + String.format("%-10s", temp.length) + String.format("%-15s", "Forks") + String.format("%-15s", end - start));
 
                 temp = unsorted[i].clone();
                 assert !Arrays.equals(temp, sorted[i]);
@@ -74,7 +74,7 @@ public class Comparison {
                     start = System.nanoTime();
                     QuickSortStreams.quicksortStream(temp);
                     end = System.nanoTime();
-                    results.append(String.format("%-3s", numberOfThreads)).append(String.format("%-10s", temp.length)).append(String.format("%-15s", "Streams")).append(String.format("%-15s", end - start)).append('\n');
+                    System.out.println(String.format("%-3s", numberOfThreads) + String.format("%-10s", temp.length) + String.format("%-15s", "Streams") + String.format("%-15s", end - start));
                 } catch (StackOverflowError e) {
                     results.append(String.format("%-3s", numberOfThreads)).append(String.format("%-10s", temp.length)).append(String.format("%-15s", "Streams")).append(String.format("%-15s", "Stackoverflow")).append('\n');
                 }
