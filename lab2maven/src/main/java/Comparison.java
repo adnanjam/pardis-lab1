@@ -12,17 +12,15 @@ public class Comparison {
             QuickSortForks.threads = numberOfThreads;
             QuickSortStreams.threads = numberOfThreads;
 
-            StringBuilder results = new StringBuilder();
 
-            results.append(String.format("%-3s", "N")).append(String.format("%-10s", "Size")).append(String.format("%-15s", "Algorithm")).append(String.format("%-15s", "Time")).append('\n');
-            results.append(new String(new char[43]).replace("\0", "=")).append("\n");
+            System.out.println(String.format("%-3s", "N") + String.format("%-10s", "Size") + String.format("%-15s", "Algorithm") + String.format("%-15s", "Time"));
+            System.out.println(new String(new char[43]).replace("\0", "="));
 
             int[][] unsorted = new int[][]{
                     new int[1000],
                     new int[10000],
                     new int[100000],
-                    new int[1000000],
-                    new int[10000000]
+                    new int[1000000]
             };
 
             for (int[] array : unsorted) {
@@ -76,14 +74,9 @@ public class Comparison {
                     end = System.nanoTime();
                     System.out.println(String.format("%-3s", numberOfThreads) + String.format("%-10s", temp.length) + String.format("%-15s", "Streams") + String.format("%-15s", end - start));
                 } catch (StackOverflowError e) {
-                    results.append(String.format("%-3s", numberOfThreads)).append(String.format("%-10s", temp.length)).append(String.format("%-15s", "Streams")).append(String.format("%-15s", "Stackoverflow")).append('\n');
+                    System.out.println(String.format("%-3s", numberOfThreads) + String.format("%-10s", temp.length) + String.format("%-15s", "Streams") + String.format("%-15s", "Stackoverflow"));
                 }
-
-//                System.out.println(results.toString());
-//                System.exit(0);
             }
-            System.out.println(results.toString());
         }
-
     }
 }
