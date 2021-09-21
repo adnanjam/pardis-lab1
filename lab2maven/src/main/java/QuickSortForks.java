@@ -33,14 +33,15 @@ public class QuickSortForks {
                 int p = QuickSort.partition(array, low, high);
 
                 // left side
-                tasks.add(new QSFRT(array, low, p - 1));
+                QSFRT left = new QSFRT(array, low, p - 1);
+                left.fork();
 
-                // right side
-                tasks.add(new QSFRT(array, p + 1, high));
+                QSFRT right = new QSFRT(array, p + 1, high);
+                right.fork();
 
-                for (RecursiveAction task : tasks){
-                    task.fork();
-                }
+                left.join();
+                right.join();
+
             }
         }
     }

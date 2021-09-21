@@ -4,6 +4,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class QuickSort {
+
+    public static Integer threads;
+
     public static void main(String[] args) {
         int[] array = generateArray(100, 100000);
         int[] clone = array.clone();
