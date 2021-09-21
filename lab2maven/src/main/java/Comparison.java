@@ -6,15 +6,14 @@ public class Comparison {
     public static void main(String[] args) {
         Random r = new Random();
 
+        System.out.println(String.format("%-3s", "N") + String.format("%-10s", "Size") + String.format("%-15s", "Algorithm") + String.format("%-15s", "Time"));
+        System.out.println(new String(new char[43]).replace("\0", "="));
+
         for (int numberOfThreads = 3; numberOfThreads <= Runtime.getRuntime().availableProcessors(); numberOfThreads++) {
             QuickSort.threads = numberOfThreads;
             QuickSortExecutor.threads = numberOfThreads;
             QuickSortForks.threads = numberOfThreads;
             QuickSortStreams.threads = numberOfThreads;
-
-
-            System.out.println(String.format("%-3s", "N") + String.format("%-10s", "Size") + String.format("%-15s", "Algorithm") + String.format("%-15s", "Time"));
-            System.out.println(new String(new char[43]).replace("\0", "="));
 
             int[][] unsorted = new int[][]{
                     new int[1000],
