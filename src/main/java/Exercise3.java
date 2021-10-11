@@ -47,4 +47,73 @@ public class Exercise3 {
 
         }
     }
+
+    private static void populateList(LockfreeConcurrentSkipListSet list, boolean normal) {
+        List<Integer> population;
+
+        if(normal){
+            population = Populator.normal();
+        }else{
+            population = Populator.uniform();
+        }
+
+        for (int i = 0; i < population.size(); i++) {
+            list.add(population.get(i));
+        }
+    }
+
+    private static long arraySum (List<Long> array){
+        long sum = 0;
+        for (int i = 0 ; i < array.size();i++){
+            sum += array.get(i);
+        }
+
+        return sum;
+    }
 }
+
+
+//import java.util.concurrent.ExecutionException;
+//        import java.util.concurrent.ExecutorService;
+//        import java.util.concurrent.Executors;
+//        import java.util.concurrent.Future;
+//
+//public class ArraySum {
+//
+//    public static int sum(int[] a) {
+//        // create a pool of threads
+//        ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+//
+//        int result = recSum(a, 0, a.length, service);
+//        service.shutdown();
+//
+//        return result;
+//    }
+//
+//    private static int recSum(int[] a, int start, int end, ExecutorService service) {
+//        // base case
+//        if (end == start) return 0;
+//        if (end - start == 1) return a[start];
+//
+//        // recursion
+//        int mid = (start / 2) + ((end + 1) / 2);
+//        Future<Integer> lFuture = service.submit(
+//                () -> {
+//                    return recSum(a, start, mid, service);
+//                }
+//        );
+//        Future<Integer> rFuture = service.submit(
+//                () -> {
+//                    return recSum(a, mid, end, service);
+//                }
+//        );
+//
+//        try {
+//            return lFuture.get() + rFuture.get();
+//        } catch (InterruptedException | ExecutionException e) {
+//            e.printStackTrace();
+//        }
+//        return -1;
+//    }
+//}
+
