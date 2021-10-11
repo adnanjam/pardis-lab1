@@ -2,14 +2,16 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicMarkableReference;
 
 public class LockfreeConcurrentSkipListSet<T> {
+    public int taskNumber = 0;
+
     public static void main(String[] args) {
         LockfreeConcurrentSkipListSet<Integer> list = new LockfreeConcurrentSkipListSet<>();
 
-        Thread t1 = new Thread(() ->{
+        Thread t1 = new Thread(() -> {
             list.add(1);
         });
 
-        Thread t2 = new Thread(() ->{
+        Thread t2 = new Thread(() -> {
             list.add(3);
         });
 
@@ -39,6 +41,13 @@ public class LockfreeConcurrentSkipListSet<T> {
     final Node<T> tail = new Node<T>(Integer.MAX_VALUE);
 
     public LockfreeConcurrentSkipListSet() {
+        for (int i = 0; i < head.next.length; i++) {
+            head.next[i] = new AtomicMarkableReference<LockfreeConcurrentSkipListSet.Node<T>>(tail, false);
+        }
+    }
+
+    public LockfreeConcurrentSkipListSet(int task) {
+        this.taskNumber = task;
         for (int i = 0; i < head.next.length; i++) {
             head.next[i] = new AtomicMarkableReference<LockfreeConcurrentSkipListSet.Node<T>>(tail, false);
         }
@@ -89,6 +98,9 @@ public class LockfreeConcurrentSkipListSet<T> {
 
             // If the element already exists
             if (found) {
+                if (taskNumber == 4) {
+                    System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [ADD] FAILED, " + x + " exists in the list.");
+                }
                 return false;
             } else {
                 // Prepare the new node
@@ -115,6 +127,9 @@ public class LockfreeConcurrentSkipListSet<T> {
                         find(x, preds, succs);
                     }
                 }
+                if (taskNumber == 4) {
+                    System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [ADD] SUCCEEDED, " + x + " added to the list.");
+                }
                 return true;
             }
         }
@@ -130,6 +145,9 @@ public class LockfreeConcurrentSkipListSet<T> {
         while (true) {
             boolean found = find(x, preds, succs);
             if (!found) {
+                if (taskNumber == 4) {
+                    System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [REMOVE] FAILED, " + x + " does not exist in the list.");
+                }
                 return false;
             } else {
                 Node<T> nodeToRemove = succs[bottomLevel];
@@ -148,6 +166,9 @@ public class LockfreeConcurrentSkipListSet<T> {
                 while (true) {
                     boolean iMarkedIt = nodeToRemove.next[bottomLevel].compareAndSet(succ, succ, false, true);
                     succ = succs[bottomLevel].next[bottomLevel].get(marked);
+                    if (taskNumber == 4) {
+                        System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [REMOVE] SUCCEEDED, " + x + " is removed form the list.");
+                    }
                     if (iMarkedIt) {
                         find(x, preds, succs);
                         return true;
@@ -183,8 +204,17 @@ public class LockfreeConcurrentSkipListSet<T> {
                 }
             }
         }
-
-        return (curr.key == v);
+        if (curr.key == v) {
+            if (taskNumber == 4) {
+                System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [CONTAINS] SUCCEEDED, " + x + " exists in the list.");
+            }
+            return true;
+        } else {
+            if (taskNumber == 4) {
+                System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [CONTAINS] FAILED, " + x + " does not exist in the list.");
+            }
+            return false;
+        }
     }
 
     boolean find(T x, Node<T>[] preds, Node<T>[] succs) {

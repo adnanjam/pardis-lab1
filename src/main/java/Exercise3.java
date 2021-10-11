@@ -63,7 +63,7 @@ public class Exercise3 {
         }
     }
 
-    private static void populateList(LockfreeConcurrentSkipListSet list, int normal) {
+    public static void populateList(LockfreeConcurrentSkipListSet list, int normal) {
         List<Integer> population;
 
         if (normal == 1) {
@@ -86,3 +86,4 @@ public class Exercise3 {
         return sum;
     }
 }
+
