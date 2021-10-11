@@ -1,11 +1,11 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SkipListTest {
+public class LockfreeConcurrentSkipListSetTest {
 
     @Test
     void dummy() {
-        SkipList s = new SkipList();
+        LockfreeConcurrentSkipListSet s = new LockfreeConcurrentSkipListSet();
         assertEquals(s, s);
     }
 }
