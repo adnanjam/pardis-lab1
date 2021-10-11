@@ -34,7 +34,7 @@ public class LockfreeConcurrentSkipListSet<T> {
 
     }
 
-    static final int MAX_LEVEL = 10;
+    static final int MAX_LEVEL = 16;
     final Node<T> head = new Node<T>(Integer.MIN_VALUE);
     final Node<T> tail = new Node<T>(Integer.MAX_VALUE);
 
