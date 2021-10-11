@@ -5,8 +5,24 @@ public class LockfreeConcurrentSkipListSet<T> {
     public static void main(String[] args) {
         LockfreeConcurrentSkipListSet<Integer> list = new LockfreeConcurrentSkipListSet<>();
 
-        list.add(1);
-        list.add(3);
+        Thread t1 = new Thread(() ->{
+            list.add(1);
+        });
+
+        Thread t2 = new Thread(() ->{
+            list.add(3);
+        });
+
+        t1.start();
+        t2.start();
+
+        try {
+            t1.join();
+            t2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
 
         System.out.println(list.contains(1));
         System.out.println(list.contains(2));
