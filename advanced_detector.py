@@ -37,23 +37,29 @@ for i in range(len(lines)):
 results = OrderedDict(sorted(results_unsorted.items()))
 
 # Find failed contains after add:
+invalid_count = 0
+total = len(results.keys())
 
-for i in range(len(results.keys() )-1):
+for i in range(total-1):
     cur = results[results.keys()[i]]
     nex = results[results.keys()[i+1]]
 
     if cur["op"] == "ADD" and  nex["op"] == "CONTAINS" and nex["res"] == "false":
-        print("Invalid operation found, aborting")
-        print(cur)
-        print(nex)
-        exit(0)
+#         print("Invalid operation found, aborting")
+#         print(cur)
+#         print(nex)
+        invalid_count += 1
+
 
     elif cur["op"] == "REMOVE" and  nex["op"] == "CONTAINS" and nex["res"] == "true":
-        print("Invalid operation found, aborting")
-        print(cur)
-        print(nex)
-        exit(0)
+#         print("Invalid operation found, aborting")
+#         print(cur)
+#         print(nex)
+        invalid_count  += 1
 
 
+ratio = float(invalid_count) / float(total)
 
-print("No invalid operation found")
+print("Total: ", total, ", invalid: ", invalid_count, ", ratio: " + str(ratio))
+
+# print("No invalid operation found")
