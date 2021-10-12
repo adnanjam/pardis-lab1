@@ -9,8 +9,8 @@ public class Exercise4 {
         Exercise3.populateList(list, 0);
         list.taskNumber = 4;
         Random r = new Random();
-        final int TOTAL_RUNS = 1000;
-        final int THREAD_COUNT = 4;
+        final int TOTAL_RUNS = 10_000;
+        final int THREAD_COUNT = 8;
 
         ExecutorService service = Executors.newFixedThreadPool(THREAD_COUNT);
         double p;

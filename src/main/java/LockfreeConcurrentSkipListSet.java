@@ -103,19 +103,22 @@ public class LockfreeConcurrentSkipListSet<T> {
                 }
                 return false;
             } else {
+                
                 // Prepare the new node
                 Node<T> newNode = new Node(x, topLevel);
                 for (int level = bottomLevel; level <= topLevel; level++) {
                     Node<T> succ = succs[level]; // Take the successor node of the current level
                     newNode.next[level].set(succ, false);
                 }
+                
                 Node<T> pred = preds[bottomLevel];
                 Node<T> succ = succs[bottomLevel];
-
+                
                 if (!pred.next[bottomLevel].compareAndSet(succ, newNode, false, false)) {
                     continue;
                 }
-
+                
+               
                 for (int level = bottomLevel + 1; level <= topLevel; level++) {
                     while (true) {
                         pred = preds[level];
@@ -123,13 +126,16 @@ public class LockfreeConcurrentSkipListSet<T> {
                         if (pred.next[level].compareAndSet(succ, newNode, false, false)) {
                             break;
                         }
-
+                        
                         find(x, preds, succs);
+                       
                     }
                 }
+
                 if (taskNumber == 4) {
                     System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [ADD] SUCCEEDED, " + x + " added to the list.");
                 }
+
                 return true;
             }
         }
