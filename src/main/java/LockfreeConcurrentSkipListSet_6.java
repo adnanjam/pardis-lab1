@@ -5,38 +5,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class LockfreeConcurrentSkipListSet_6<T> {
     public int taskNumber = 0;
-    private final Lock lock = new ReentrantLock();
-
-    public static void main(String[] args) {
-        LockfreeConcurrentSkipListSet_6<Integer> list = new LockfreeConcurrentSkipListSet_6<>();
-
-        Thread t1 = new Thread(() -> {
-            list.add(1);
-        });
-
-        Thread t2 = new Thread(() -> {
-            list.add(3);
-        });
-
-        t1.start();
-        t2.start();
-
-        try {
-            t1.join();
-            t2.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(list.contains(1));
-        System.out.println(list.contains(2));
-        System.out.println(list.contains(3));
-
-        list.remove(3);
-
-        System.out.println(list.contains(3));
-
-    }
+    private final Lock reel = new ReentrantLock();
 
     static final int MAX_LEVEL = 16;
     final Node<T> head = new Node<T>(Integer.MIN_VALUE);
@@ -55,38 +24,6 @@ public class LockfreeConcurrentSkipListSet_6<T> {
         }
     }
 
-    public static final class Node<T> {
-        final T value;
-        final int key;
-        final AtomicMarkableReference<Node<T>>[] next; // a list for the successors
-        private int topLevel;
-
-        // constructor for sentinel nodes (head, tail)
-        public Node(int key) {
-            value = null;
-            this.key = key;
-            next = (AtomicMarkableReference<Node<T>>[]) new AtomicMarkableReference[MAX_LEVEL + 1];
-            for (int i = 0; i < next.length; i++) {
-                next[i] = new AtomicMarkableReference<Node<T>>(null, false);
-            }
-            topLevel = MAX_LEVEL;
-        }
-
-        // constructor for ordinary nodes
-
-        public Node(T x, int height) {
-            value = x;
-            key = x.hashCode();
-            next = (AtomicMarkableReference<Node<T>>[]) new AtomicMarkableReference[MAX_LEVEL + 1];
-            for (int i = 0; i < next.length; i++) {
-                next[i] = new AtomicMarkableReference<Node<T>>(null, false);
-            }
-
-            topLevel = height;
-        }
-    }
-    // Method to add a node
-
     boolean add(T x) {
         int topLevel = randomLevel();
         int bottomLevel = 0;
@@ -94,21 +31,23 @@ public class LockfreeConcurrentSkipListSet_6<T> {
         Node<T>[] preds = (Node<T>[]) new Node[MAX_LEVEL + 1]; // list of predecessors
         Node<T>[] succs = (Node<T>[]) new Node[MAX_LEVEL + 1]; // list of successors
 
-        lock.lock();
+        reel.lock();
+
         while (true) {
             boolean found = find(x, preds, succs);
 
             // If the element already exists
             if (found) {
+
                 if (taskNumber == 4) {
                     System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [ADD] FAILED, "
                             + x + " exists in the list.");
                 }
-                lock.unlock();
+                reel.unlock();
                 return false;
             } else {
                 // Prepare the new node
-                Node<T> newNode = new Node(x, topLevel);
+                Node<T> newNode = new Node<T>(x, topLevel);
                 for (int level = bottomLevel; level <= topLevel; level++) {
                     Node<T> succ = succs[level]; // Take the successor node of the current level
                     newNode.next[level].set(succ, false);
@@ -133,11 +72,10 @@ public class LockfreeConcurrentSkipListSet_6<T> {
                     }
                 }
 
-                if (taskNumber == 4) {
-                    System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName()
-                            + ", [ADD] SUCCEEDED, " + x + " added to the list.");
-                }
-                lock.unlock();
+                System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [ADD] SUCCEEDED, "
+                        + x + " added to the list.");
+
+                reel.unlock();
                 return true;
             }
         }
@@ -172,6 +110,7 @@ public class LockfreeConcurrentSkipListSet_6<T> {
                 boolean[] marked = { false };
 
                 succ = nodeToRemove.next[bottomLevel].get(marked);
+                // lock.lock();
                 while (true) {
                     boolean iMarkedIt = nodeToRemove.next[bottomLevel].compareAndSet(succ, succ, false, true);
                     succ = succs[bottomLevel].next[bottomLevel].get(marked);
@@ -179,10 +118,13 @@ public class LockfreeConcurrentSkipListSet_6<T> {
                         System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName()
                                 + ", [REMOVE] SUCCEEDED, " + x + " is removed form the list.");
                     }
+
                     if (iMarkedIt) {
                         find(x, preds, succs);
+                        // lock.unlock();
                         return true;
                     } else if (marked[0]) {
+                        // lock.unlock();
                         return false;
                     }
                 }
@@ -197,38 +139,44 @@ public class LockfreeConcurrentSkipListSet_6<T> {
         boolean[] marked = { false };
         Node<T> pred = head, curr = null, succ = null;
 
-        lock.lock();
-        for (int level = MAX_LEVEL; level >= bottomLevel; level--) {
-            curr = pred.next[level].getReference();
-            while (true) {
-                succ = curr.next[level].get(marked);
-                while (marked[0]) {
-                    curr = pred.next[level].getReference();
+        reel.lock();
+        try {
+            for (int level = MAX_LEVEL; level >= bottomLevel; level--) {
+                curr = pred.next[level].getReference();
+                while (true) {
                     succ = curr.next[level].get(marked);
-                }
-                if (curr.key < v) {
-                    pred = curr;
-                    curr = succ;
-                } else {
-                    break;
+                    while (marked[0]) {
+                        curr = pred.next[level].getReference();
+                        succ = curr.next[level].get(marked);
+                    }
+                    if (curr.key < v) {
+                        pred = curr;
+                        curr = succ;
+                    } else {
+                        break;
+                    }
                 }
             }
+        } finally {
+            reel.unlock();
         }
+
         if (curr.key == v) {
             if (taskNumber == 4) {
                 System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName()
                         + ", [CONTAINS] SUCCEEDED, " + x + " exists in the list.");
             }
-            lock.unlock();
+
             return true;
         } else {
             if (taskNumber == 4) {
                 System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [CONTAINS] FAILED, "
                         + x + " does not exist in the list.");
             }
-            lock.unlock();
+
             return false;
         }
+
     }
 
     boolean find(T x, Node<T>[] preds, Node<T>[] succs) {
@@ -274,4 +222,37 @@ public class LockfreeConcurrentSkipListSet_6<T> {
         Random r = new Random();
         return r.nextInt(MAX_LEVEL);
     }
+
+    public static final class Node<T> {
+        final T value;
+        final int key;
+        final AtomicMarkableReference<Node<T>>[] next; // a list for the successors
+        private int topLevel;
+
+        // constructor for sentinel nodes (head, tail)
+        public Node(int key) {
+            value = null;
+            this.key = key;
+            next = (AtomicMarkableReference<Node<T>>[]) new AtomicMarkableReference[MAX_LEVEL + 1];
+            for (int i = 0; i < next.length; i++) {
+                next[i] = new AtomicMarkableReference<Node<T>>(null, false);
+            }
+            topLevel = MAX_LEVEL;
+        }
+
+        // constructor for ordinary nodes
+
+        public Node(T x, int height) {
+            value = x;
+            key = x.hashCode();
+            next = (AtomicMarkableReference<Node<T>>[]) new AtomicMarkableReference[MAX_LEVEL + 1];
+            for (int i = 0; i < next.length; i++) {
+                next[i] = new AtomicMarkableReference<Node<T>>(null, false);
+            }
+
+            topLevel = height;
+        }
+    }
+    // Method to add a node
+
 }

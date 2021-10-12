@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit;
 public class Exercise4 {
     public static void main(String[] args) {
         LockfreeConcurrentSkipListSet_6<Integer> list = new LockfreeConcurrentSkipListSet_6<>();
-        list.taskNumber = 4;
         populateList(list, 0);
+        list.taskNumber = 4;
 
         Random r = new Random();
         final int TOTAL_RUNS = 10_000;
@@ -27,6 +27,7 @@ public class Exercise4 {
                 service.execute(() -> list.add(8));
             }
         }
+
         service.shutdown();
 
         while (true) {

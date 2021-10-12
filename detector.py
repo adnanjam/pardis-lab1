@@ -37,8 +37,10 @@ for i in range(len(results.keys() )-1):
     nex = results[results.keys()[i+1]]
 
     
-    if cur["op"] == "ADD" and  nex["op"] == "CONTAINS" and nex["res"] == "FAILED":
+    if cur["op"] == "ADD" and nex["op"] == "CONTAINS" and nex["res"] == "FAILED":
         print("Invalid operation found, aborting")
+        print(cur)
+        print(nex)
         exit(0)
     
     
