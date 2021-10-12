@@ -11,7 +11,7 @@ public class Exercise8 {
         list.taskNumber = 4;
 
         Random r = new Random();
-        final int TOTAL_RUNS = 10_000;
+        final int TOTAL_RUNS = 10000;
         final int THREAD_COUNT = 2;
 
         ExecutorService service = Executors.newFixedThreadPool(THREAD_COUNT);
