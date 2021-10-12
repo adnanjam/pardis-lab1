@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -5,9 +6,10 @@ import java.util.concurrent.TimeUnit;
 
 public class Exercise4 {
     public static void main(String[] args) {
-        LockfreeConcurrentSkipListSet<Integer> list = new LockfreeConcurrentSkipListSet<>();
-        Exercise3.populateList(list, 0);
+        LockfreeConcurrentSkipListSet_6<Integer> list = new LockfreeConcurrentSkipListSet_6<>();
         list.taskNumber = 4;
+        populateList(list, 0);
+
         Random r = new Random();
         final int TOTAL_RUNS = 10_000;
         final int THREAD_COUNT = 8;
@@ -37,5 +39,28 @@ public class Exercise4 {
             }
         }
         System.out.println("================\nEnd of simulation.\n================");
+    }
+
+    private static void populateList(LockfreeConcurrentSkipListSet_6 list, int normal) {
+        List<Integer> population;
+
+        if (normal == 1) {
+            population = Populator.normal();
+        } else {
+            population = Populator.uniform();
+        }
+
+        for (int i = 0; i < population.size(); i++) {
+            list.add(population.get(i));
+        }
+    }
+
+    private static long arraySum(List<Long> array) {
+        long sum = 0;
+        for (int i = 0; i < array.size(); i++) {
+            sum += array.get(i);
+        }
+
+        return sum;
     }
 }

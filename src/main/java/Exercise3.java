@@ -5,9 +5,9 @@ import java.util.Random;
 import java.util.concurrent.*;
 
 public class Exercise3 {
-    final static int MAX_OP = 1_000_0;
+    final static int MAX_OP = 1_000_00;
     final static int TOTAL_RUNS = 10;
-    final static int[] THREAD_COUNTS = new int[]{2, 12, 30, 46};
+    final static int[] THREAD_COUNTS = new int[] { 2, 12, 30, 46 };
     final static double addProb = 0.1;
     final static double removeProb = 0.2;
     static Random r = new Random();
@@ -16,10 +16,10 @@ public class Exercise3 {
 
         for (int normal = 0; normal < 2; normal++) {
 
-
             for (int threadCount : THREAD_COUNTS) {
-                LockfreeConcurrentSkipListSet<Integer> list = new LockfreeConcurrentSkipListSet<>();
-                populateList(list,  normal ); // Fills the list with elements
+                LockfreeConcurrentSkipListSet_6<Integer> list = new LockfreeConcurrentSkipListSet_6<>();
+
+                populateList(list, normal); // Fills the list with elements
 
                 // Average over ten runs
                 List<Long> results = new ArrayList<>(TOTAL_RUNS);
@@ -58,12 +58,13 @@ public class Exercise3 {
 
                 long avgExecutionTime = arraySum(results) / TOTAL_RUNS;
 
-                System.out.println(threadCount + ",  " + avgExecutionTime + ", " + normal + ", " +  + avgExecutionTime / 1_000_000);
+                System.out.println(
+                        threadCount + ",  " + avgExecutionTime + ", " + normal + ", " + +avgExecutionTime / 1_000_000);
             }
         }
     }
 
-    public static void populateList(LockfreeConcurrentSkipListSet list, int normal) {
+    private static void populateList(LockfreeConcurrentSkipListSet_6 list, int normal) {
         List<Integer> population;
 
         if (normal == 1) {
@@ -86,4 +87,3 @@ public class Exercise3 {
         return sum;
     }
 }
-

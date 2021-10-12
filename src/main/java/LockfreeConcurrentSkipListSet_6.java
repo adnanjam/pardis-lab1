@@ -1,11 +1,14 @@
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicMarkableReference;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class LockfreeConcurrentSkipListSet<T> {
+public class LockfreeConcurrentSkipListSet_6<T> {
     public int taskNumber = 0;
+    private final Lock lock = new ReentrantLock();
 
     public static void main(String[] args) {
-        LockfreeConcurrentSkipListSet<Integer> list = new LockfreeConcurrentSkipListSet<>();
+        LockfreeConcurrentSkipListSet_6<Integer> list = new LockfreeConcurrentSkipListSet_6<>();
 
         Thread t1 = new Thread(() -> {
             list.add(1);
@@ -39,16 +42,16 @@ public class LockfreeConcurrentSkipListSet<T> {
     final Node<T> head = new Node<T>(Integer.MIN_VALUE);
     final Node<T> tail = new Node<T>(Integer.MAX_VALUE);
 
-    public LockfreeConcurrentSkipListSet() {
+    public LockfreeConcurrentSkipListSet_6() {
         for (int i = 0; i < head.next.length; i++) {
-            head.next[i] = new AtomicMarkableReference<LockfreeConcurrentSkipListSet.Node<T>>(tail, false);
+            head.next[i] = new AtomicMarkableReference<LockfreeConcurrentSkipListSet_6.Node<T>>(tail, false);
         }
     }
 
-    public LockfreeConcurrentSkipListSet(int task) {
+    public LockfreeConcurrentSkipListSet_6(int task) {
         this.taskNumber = task;
         for (int i = 0; i < head.next.length; i++) {
-            head.next[i] = new AtomicMarkableReference<LockfreeConcurrentSkipListSet.Node<T>>(tail, false);
+            head.next[i] = new AtomicMarkableReference<LockfreeConcurrentSkipListSet_6.Node<T>>(tail, false);
         }
     }
 
@@ -91,6 +94,7 @@ public class LockfreeConcurrentSkipListSet<T> {
         Node<T>[] preds = (Node<T>[]) new Node[MAX_LEVEL + 1]; // list of predecessors
         Node<T>[] succs = (Node<T>[]) new Node[MAX_LEVEL + 1]; // list of successors
 
+        lock.lock();
         while (true) {
             boolean found = find(x, preds, succs);
 
@@ -100,7 +104,7 @@ public class LockfreeConcurrentSkipListSet<T> {
                     System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [ADD] FAILED, "
                             + x + " exists in the list.");
                 }
-
+                lock.unlock();
                 return false;
             } else {
                 // Prepare the new node
@@ -133,6 +137,7 @@ public class LockfreeConcurrentSkipListSet<T> {
                     System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName()
                             + ", [ADD] SUCCEEDED, " + x + " added to the list.");
                 }
+                lock.unlock();
                 return true;
             }
         }
@@ -192,6 +197,7 @@ public class LockfreeConcurrentSkipListSet<T> {
         boolean[] marked = { false };
         Node<T> pred = head, curr = null, succ = null;
 
+        lock.lock();
         for (int level = MAX_LEVEL; level >= bottomLevel; level--) {
             curr = pred.next[level].getReference();
             while (true) {
@@ -213,12 +219,14 @@ public class LockfreeConcurrentSkipListSet<T> {
                 System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName()
                         + ", [CONTAINS] SUCCEEDED, " + x + " exists in the list.");
             }
+            lock.unlock();
             return true;
         } else {
             if (taskNumber == 4) {
                 System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [CONTAINS] FAILED, "
                         + x + " does not exist in the list.");
             }
+            lock.unlock();
             return false;
         }
     }
