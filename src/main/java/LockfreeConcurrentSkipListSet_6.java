@@ -99,7 +99,7 @@ public class LockfreeConcurrentSkipListSet_6<T> {
             } else {
                 Node<T> nodeToRemove = succs[bottomLevel];
                 for (int level = nodeToRemove.topLevel; level >= bottomLevel + 1; level--) {
-                    boolean[] marked = { false };
+                    boolean[] marked = {false};
                     succ = nodeToRemove.next[level].get(marked);
                     while (!marked[0]) {
                         nodeToRemove.next[level].compareAndSet(succ, succ, false, true);
@@ -107,7 +107,7 @@ public class LockfreeConcurrentSkipListSet_6<T> {
                     }
                 }
 
-                boolean[] marked = { false };
+                boolean[] marked = {false};
 
                 succ = nodeToRemove.next[bottomLevel].get(marked);
                 // lock.lock();
@@ -136,7 +136,7 @@ public class LockfreeConcurrentSkipListSet_6<T> {
     boolean contains(T x) {
         int bottomLevel = 0;
         int v = x.hashCode();
-        boolean[] marked = { false };
+        boolean[] marked = {false};
         Node<T> pred = head, curr = null, succ = null;
 
         reel.lock();
@@ -183,12 +183,13 @@ public class LockfreeConcurrentSkipListSet_6<T> {
         int bottomLevel = 0;
         int key = x.hashCode();
 
-        boolean[] marked = { false };
+        boolean[] marked = {false};
         boolean snip;
 
         Node<T> pred = null, curr = null, succ = null;
 
-        retry: while (true) {
+        retry:
+        while (true) {
             pred = head;
             for (int level = MAX_LEVEL; level >= bottomLevel; level--) {
                 curr = pred.next[level].getReference();
