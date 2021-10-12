@@ -124,13 +124,12 @@ public class LockfreeConcurrentSkipListSet_6<T> {
                     System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName()
                             + ", [REMOVE] SUCCEEDED, " + x + " is removed form the list.");
 
+                    reel.unlock();
 
                     if (iMarkedIt) {
                         find(x, preds, succs);
-                        reel.unlock();
                         return true;
                     } else if (marked[0]) {
-                        reel.unlock();
                         return false;
                     }
                 }
