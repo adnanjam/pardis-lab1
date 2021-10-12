@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicMarkableReference;
 import java.util.concurrent.locks.Lock;
@@ -6,6 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class LockfreeConcurrentSkipListSet_6<T> {
     public int taskNumber = 0;
     private final Lock reel = new ReentrantLock();
+
 
     static final int MAX_LEVEL = 16;
     final Node<T> head = new Node<T>(Integer.MIN_VALUE);
@@ -31,14 +33,15 @@ public class LockfreeConcurrentSkipListSet_6<T> {
         Node<T>[] preds = (Node<T>[]) new Node[MAX_LEVEL + 1]; // list of predecessors
         Node<T>[] succs = (Node<T>[]) new Node[MAX_LEVEL + 1]; // list of successors
 
-        reel.lock();
 
+        reel.lock();
         while (true) {
+
             boolean found = find(x, preds, succs);
 
             // If the element already exists
-            if (found) {
 
+            if (found) {
                 if (taskNumber == 4) {
                     System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [ADD] FAILED, "
                             + x + " exists in the list.");
@@ -60,6 +63,7 @@ public class LockfreeConcurrentSkipListSet_6<T> {
                     continue;
                 }
 
+
                 for (int level = bottomLevel + 1; level <= topLevel; level++) {
                     while (true) {
                         pred = preds[level];
@@ -72,8 +76,9 @@ public class LockfreeConcurrentSkipListSet_6<T> {
                     }
                 }
 
-                System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [ADD] SUCCEEDED, "
-                        + x + " added to the list.");
+                if (taskNumber == 4) {
+                    System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [ADD] SUCCEEDED, " + x + " added to the list.");
+                }
 
                 reel.unlock();
                 return true;
@@ -88,6 +93,7 @@ public class LockfreeConcurrentSkipListSet_6<T> {
         Node<T>[] succs = (Node<T>[]) new Node[MAX_LEVEL + 1];
         Node<T> succ;
 
+        reel.lock();
         while (true) {
             boolean found = find(x, preds, succs);
             if (!found) {
@@ -95,6 +101,7 @@ public class LockfreeConcurrentSkipListSet_6<T> {
                     System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName()
                             + ", [REMOVE] FAILED, " + x + " does not exist in the list.");
                 }
+                reel.unlock();
                 return false;
             } else {
                 Node<T> nodeToRemove = succs[bottomLevel];
@@ -110,21 +117,20 @@ public class LockfreeConcurrentSkipListSet_6<T> {
                 boolean[] marked = {false};
 
                 succ = nodeToRemove.next[bottomLevel].get(marked);
-                // lock.lock();
                 while (true) {
                     boolean iMarkedIt = nodeToRemove.next[bottomLevel].compareAndSet(succ, succ, false, true);
                     succ = succs[bottomLevel].next[bottomLevel].get(marked);
-                    if (taskNumber == 4) {
-                        System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName()
-                                + ", [REMOVE] SUCCEEDED, " + x + " is removed form the list.");
-                    }
+
+                    System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName()
+                            + ", [REMOVE] SUCCEEDED, " + x + " is removed form the list.");
+
 
                     if (iMarkedIt) {
                         find(x, preds, succs);
-                        // lock.unlock();
+                        reel.unlock();
                         return true;
                     } else if (marked[0]) {
-                        // lock.unlock();
+                        reel.unlock();
                         return false;
                     }
                 }
@@ -140,40 +146,37 @@ public class LockfreeConcurrentSkipListSet_6<T> {
         Node<T> pred = head, curr = null, succ = null;
 
         reel.lock();
-        try {
-            for (int level = MAX_LEVEL; level >= bottomLevel; level--) {
-                curr = pred.next[level].getReference();
-                while (true) {
+        for (int level = MAX_LEVEL; level >= bottomLevel; level--) {
+            curr = pred.next[level].getReference();
+            while (true) {
+                succ = curr.next[level].get(marked);
+                while (marked[0]) {
+                    curr = pred.next[level].getReference();
                     succ = curr.next[level].get(marked);
-                    while (marked[0]) {
-                        curr = pred.next[level].getReference();
-                        succ = curr.next[level].get(marked);
-                    }
-                    if (curr.key < v) {
-                        pred = curr;
-                        curr = succ;
-                    } else {
-                        break;
-                    }
+                }
+                if (curr.key < v) {
+                    pred = curr;
+                    curr = succ;
+                } else {
+                    break;
                 }
             }
-        } finally {
-            reel.unlock();
         }
+
 
         if (curr.key == v) {
             if (taskNumber == 4) {
                 System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName()
                         + ", [CONTAINS] SUCCEEDED, " + x + " exists in the list.");
             }
-
+            reel.unlock();
             return true;
         } else {
             if (taskNumber == 4) {
                 System.out.println(System.nanoTime() + ", " + Thread.currentThread().getName() + ", [CONTAINS] FAILED, "
                         + x + " does not exist in the list.");
             }
-
+            reel.unlock();
             return false;
         }
 
