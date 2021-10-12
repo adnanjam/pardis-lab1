@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Exercise4 {
     public static void main(String[] args) {
-        LockfreeConcurrentSkipListSet_6<Integer> list = new LockfreeConcurrentSkipListSet_6<>();
+        LockfreeConcurrentSkipListSet<Integer> list = new LockfreeConcurrentSkipListSet<>();
         populateList(list, 0);
         list.taskNumber = 4;
 
@@ -42,7 +42,7 @@ public class Exercise4 {
         System.out.println("================\nEnd of simulation.\n================");
     }
 
-    private static void populateList(LockfreeConcurrentSkipListSet_6 list, int normal) {
+    private static void populateList(LockfreeConcurrentSkipListSet list, int normal) {
         List<Integer> population;
 
         if (normal == 1) {

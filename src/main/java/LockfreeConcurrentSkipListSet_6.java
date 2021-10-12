@@ -125,7 +125,6 @@ public class LockfreeConcurrentSkipListSet_6<T> {
                             + ", [REMOVE] SUCCEEDED, " + x + " is removed form the list.");
 
                     reel.unlock();
-
                     if (iMarkedIt) {
                         find(x, preds, succs);
                         return true;
