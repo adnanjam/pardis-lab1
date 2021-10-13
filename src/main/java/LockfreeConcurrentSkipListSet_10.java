@@ -25,6 +25,7 @@ public class LockfreeConcurrentSkipListSet_10<T> {
         //        if (taskNumber == 4) {
         //            logQ.put( new String[]{String.valueOf(Thread.currentThread().getId()),  "ADD", String.valueOf(System.nanoTime())});
         //        }
+        String[] log = new String[]{String.valueOf(Thread.currentThread().getId()),  null, null};
 
         int topLevel = randomLevel();
         int bottomLevel = 0;
@@ -40,7 +41,9 @@ public class LockfreeConcurrentSkipListSet_10<T> {
 
             if (found) {
                 if (taskNumber == 4) {
-                    logQ.put(new String[]{String.valueOf(Thread.currentThread().getId()),  "LIN-ADD-FALSE", String.valueOf(System.nanoTime())});
+                    log[1] = "LIN-ADD-FALSE";
+                    log[2] = String.valueOf(System.nanoTime());
+                    logQ.put(log);
                 }
                 return false;
             } else {
@@ -72,7 +75,9 @@ public class LockfreeConcurrentSkipListSet_10<T> {
                 }
 
                 if (taskNumber == 4) {
-                    logQ.put(new String[]{String.valueOf(Thread.currentThread().getId()),  "LIN-ADD-TRUE", String.valueOf(System.nanoTime())});
+                    log[1] = "LIN-ADD-TRUE";
+                    log[2] = String.valueOf(System.nanoTime());
+                    logQ.put(log);
                 }
                 return true;
             }
@@ -87,6 +92,8 @@ public class LockfreeConcurrentSkipListSet_10<T> {
         Node<T>[] succs = (Node<T>[]) new Node[MAX_LEVEL + 1];
         Node<T> succ;
 
+        String[] log = new String[]{String.valueOf(Thread.currentThread().getId()),  null, null};
+
         while (true) {
             boolean found = find(x, preds, succs);
             if (!found) {
@@ -94,7 +101,9 @@ public class LockfreeConcurrentSkipListSet_10<T> {
 ////                    logs.append("LIN_REM, " + System.nanoTime() + ", ");
 //                }
 //                logs.append("RET, false, " + System.nanoTime() + "\n");
-                    logQ.put(new String[]{String.valueOf(Thread.currentThread().getId()),  "LIN-REMOVE-FALSE", String.valueOf(System.nanoTime())});
+                    log[1] = "LIN-REMOVE-FALSE";
+                    log[2] = String.valueOf(System.nanoTime());
+                    logQ.put(log);
 
                 return false;
             } else {
@@ -117,8 +126,9 @@ public class LockfreeConcurrentSkipListSet_10<T> {
 
 //                    logs.append("LIN_REM, " + System.nanoTime() + ", ");
 
-                    logQ.put(new String[]{String.valueOf(Thread.currentThread().getId()),  "LIN-REMOVE-TRUE", String.valueOf(System.nanoTime())});
-
+                    log[1] = "LIN-REMOVE-TRUE";
+                    log[2] = String.valueOf(System.nanoTime());
+                    logQ.put(log);
                     if (iMarkedIt) {
                         find(x, preds, succs);
 //                        logs.append("RET, true, " + System.nanoTime() + "\n");
@@ -135,7 +145,7 @@ public class LockfreeConcurrentSkipListSet_10<T> {
 
     boolean contains(T x) throws InterruptedException{
 //        logs.append(Thread.currentThread().getName() + ", CONTAINS, " + System.nanoTime() + ", ");
-
+        String[] log = new String[]{String.valueOf(Thread.currentThread().getId()),  null, null};
         int bottomLevel = 0;
         int v = x.hashCode();
         boolean[] marked = {false};
@@ -162,15 +172,18 @@ public class LockfreeConcurrentSkipListSet_10<T> {
         if (curr.key == v) {
             if (taskNumber == 4) {
 //                logs.append("LIN_CON, " + System.nanoTime() + ", ");
-                logQ.put(new String[]{String.valueOf(Thread.currentThread().getId()),  "LIN-CONTAINS-TRUE", String.valueOf(System.nanoTime())});
-
+                log[1] = "LIN-CONTAINS-TRUE";
+                log[2] = String.valueOf(System.nanoTime());
+                logQ.put(log);
             }
 
 //            logs.append("RET, true, " + System.nanoTime() + "\n");
             return true;
         } else {
             if (taskNumber == 4) {
-                logQ.put(new String[]{String.valueOf(Thread.currentThread().getId()),  "LIN-CONTAINS-FALSE", String.valueOf(System.nanoTime())});
+                log[1] = "LIN-CONTAINS-FALSE";
+                log[2] = String.valueOf(System.nanoTime());
+                logQ.put(log);
             }
 
 //            logs.append("RET, false, " + System.nanoTime() + "\n");

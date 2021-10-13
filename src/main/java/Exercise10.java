@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Exercise10 {
     final static int THREAD_COUNT = 6;
-    final static int TOTAL_RUNS = 1_000_000;
+    final static int TOTAL_RUNS = 10_000;
 
     private static class Aggregator implements Runnable {
 
@@ -37,10 +37,12 @@ public class Exercise10 {
                     }
 
                     logs.get(threadId).append(payload + " , " + value + " \n");
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
+//            System.out.println("Aggregator exiting");
         }
 
     }
@@ -55,12 +57,11 @@ public class Exercise10 {
         LockfreeConcurrentSkipListSet_10<Integer> list = new LockfreeConcurrentSkipListSet_10<>(agg.queue);
         populateList(list, 0);
 
-
         list.taskNumber = 4;
 
         Random r = new Random();
 
-        ExecutorService service = Executors.newFixedThreadPool(THREAD_COUNT);
+        ExecutorService service = Executors.newFixedThreadPool(THREAD_COUNT - 1); // reserve one thread for Agg.
         double p;
 
         service.execute(agg);
@@ -95,7 +96,7 @@ public class Exercise10 {
             }
 
 
-            if (i == 0) {
+            if (i == TOTAL_RUNS / 10) {
                 t.start();
             }
         }

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicMarkableReference;
@@ -7,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class LockfreeConcurrentSkipListSet_8<T> {
     public int taskNumber = 0;
-    public List<StringBuilder> globalLogs = new ArrayList<>();
+    public List<StringBuilder> globalLogs = Collections.synchronizedList(new ArrayList<>());
 
     static final int MAX_LEVEL = 16;
     final Node<T> head = new Node<T>(Integer.MIN_VALUE);
