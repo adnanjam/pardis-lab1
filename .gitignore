@@ -1,6 +1,7 @@
 **/target
 **/.idea
 **/out
+**/bin
 
 **/*.class
 .settings
