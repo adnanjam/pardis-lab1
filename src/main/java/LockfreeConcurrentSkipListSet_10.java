@@ -1,39 +1,31 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicMarkableReference;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-public class LockfreeConcurrentSkipListSet_8<T> {
+public class LockfreeConcurrentSkipListSet_10<T> {
     public int taskNumber = 0;
-    public List<StringBuilder> globalLogs = Collections.synchronizedList(new ArrayList<>());
+    ArrayBlockingQueue logQ;
 
     static final int MAX_LEVEL = 16;
     final Node<T> head = new Node<T>(Integer.MIN_VALUE);
     final Node<T> tail = new Node<T>(Integer.MAX_VALUE);
 
-    public LockfreeConcurrentSkipListSet_8() {
+    public LockfreeConcurrentSkipListSet_10(ArrayBlockingQueue logQ) {
+        this.logQ  = logQ;
         for (int i = 0; i < head.next.length; i++) {
-            head.next[i] = new AtomicMarkableReference<LockfreeConcurrentSkipListSet_8.Node<T>>(tail, false);
+            head.next[i] = new AtomicMarkableReference<LockfreeConcurrentSkipListSet_10.Node<T>>(tail, false);
         }
 
     }
 
-    public LockfreeConcurrentSkipListSet_8(int task) {
-        this.taskNumber = task;
-        for (int i = 0; i < head.next.length; i++) {
-            head.next[i] = new AtomicMarkableReference<LockfreeConcurrentSkipListSet_8.Node<T>>(tail, false);
-        }
-    }
+    boolean add(T x) throws InterruptedException {
 
-    boolean add(T x) {
-        StringBuilder logs = new StringBuilder();
-        globalLogs.add(logs);
-        if (taskNumber == 4) {
-            logs.append(Thread.currentThread().getName() + ", ADD, " + System.nanoTime() + ", ");
-        }
+        //        if (taskNumber == 4) {
+        //            logQ.put( new String[]{String.valueOf(Thread.currentThread().getId()),  "ADD", String.valueOf(System.nanoTime())});
+        //        }
+        String[] log = new String[]{String.valueOf(Thread.currentThread().getId()),  null, null};
 
         int topLevel = randomLevel();
         int bottomLevel = 0;
@@ -49,10 +41,9 @@ public class LockfreeConcurrentSkipListSet_8<T> {
 
             if (found) {
                 if (taskNumber == 4) {
-                    logs.append("LIN_ADD, " + System.nanoTime() + ", ");
-                }
-                if (taskNumber == 4) {
-                    logs.append("RET, false, " + System.nanoTime() + "\n");
+                    log[1] = "LIN-ADD-FALSE";
+                    log[2] = String.valueOf(System.nanoTime());
+                    logQ.put(log);
                 }
                 return false;
             } else {
@@ -84,10 +75,9 @@ public class LockfreeConcurrentSkipListSet_8<T> {
                 }
 
                 if (taskNumber == 4) {
-                    logs.append("LIN_ADD, " + System.nanoTime() + ", ");
-                }
-                if (taskNumber == 4) {
-                    logs.append("RET, true, " + System.nanoTime() + "\n");
+                    log[1] = "LIN-ADD-TRUE";
+                    log[2] = String.valueOf(System.nanoTime());
+                    logQ.put(log);
                 }
                 return true;
             }
@@ -95,22 +85,26 @@ public class LockfreeConcurrentSkipListSet_8<T> {
     }
 
     // Method to remove a node
-    boolean remove(T x) {
-        StringBuilder logs = new StringBuilder();
-        globalLogs.add(logs);
-        logs.append(Thread.currentThread().getName() + ", REMOVE, " + System.nanoTime() + ", ");
+    boolean remove(T x) throws InterruptedException{
+//        logs.append(Thread.currentThread().getName() + ", REMOVE, " + System.nanoTime() + ", ");
         int bottomLevel = 0;
         Node<T>[] preds = (Node<T>[]) new Node[MAX_LEVEL + 1];
         Node<T>[] succs = (Node<T>[]) new Node[MAX_LEVEL + 1];
         Node<T> succ;
 
+        String[] log = new String[]{String.valueOf(Thread.currentThread().getId()),  null, null};
+
         while (true) {
             boolean found = find(x, preds, succs);
             if (!found) {
-                if (taskNumber == 4) {
-                    logs.append("LIN_REM, " + System.nanoTime() + ", ");
-                }
-                logs.append("RET, false, " + System.nanoTime() + "\n");
+//                if (taskNumber == 4) {
+////                    logs.append("LIN_REM, " + System.nanoTime() + ", ");
+//                }
+//                logs.append("RET, false, " + System.nanoTime() + "\n");
+                    log[1] = "LIN-REMOVE-FALSE";
+                    log[2] = String.valueOf(System.nanoTime());
+                    logQ.put(log);
+
                 return false;
             } else {
                 Node<T> nodeToRemove = succs[bottomLevel];
@@ -130,14 +124,17 @@ public class LockfreeConcurrentSkipListSet_8<T> {
                     boolean iMarkedIt = nodeToRemove.next[bottomLevel].compareAndSet(succ, succ, false, true);
                     succ = succs[bottomLevel].next[bottomLevel].get(marked);
 
-                    logs.append("LIN_REM, " + System.nanoTime() + ", ");
+//                    logs.append("LIN_REM, " + System.nanoTime() + ", ");
 
+                    log[1] = "LIN-REMOVE-TRUE";
+                    log[2] = String.valueOf(System.nanoTime());
+                    logQ.put(log);
                     if (iMarkedIt) {
                         find(x, preds, succs);
-                        logs.append("RET, true, " + System.nanoTime() + "\n");
+//                        logs.append("RET, true, " + System.nanoTime() + "\n");
                         return true;
                     } else if (marked[0]) {
-                        logs.append("RET, false, " + System.nanoTime() + "\n");
+//                        logs.append("RET, false, " + System.nanoTime() + "\n");
                         return false;
                     }
                 }
@@ -146,11 +143,9 @@ public class LockfreeConcurrentSkipListSet_8<T> {
 
     }
 
-    boolean contains(T x) {
-        StringBuilder logs = new StringBuilder();
-        globalLogs.add(logs);
-        logs.append(Thread.currentThread().getName() + ", CONTAINS, " + System.nanoTime() + ", ");
-
+    boolean contains(T x) throws InterruptedException{
+//        logs.append(Thread.currentThread().getName() + ", CONTAINS, " + System.nanoTime() + ", ");
+        String[] log = new String[]{String.valueOf(Thread.currentThread().getId()),  null, null};
         int bottomLevel = 0;
         int v = x.hashCode();
         boolean[] marked = {false};
@@ -176,17 +171,22 @@ public class LockfreeConcurrentSkipListSet_8<T> {
 
         if (curr.key == v) {
             if (taskNumber == 4) {
-                logs.append("LIN_CON, " + System.nanoTime() + ", ");
+//                logs.append("LIN_CON, " + System.nanoTime() + ", ");
+                log[1] = "LIN-CONTAINS-TRUE";
+                log[2] = String.valueOf(System.nanoTime());
+                logQ.put(log);
             }
 
-            logs.append("RET, true, " + System.nanoTime() + "\n");
+//            logs.append("RET, true, " + System.nanoTime() + "\n");
             return true;
         } else {
             if (taskNumber == 4) {
-                logs.append("LIN_CON, " + System.nanoTime() + ", ");
+                log[1] = "LIN-CONTAINS-FALSE";
+                log[2] = String.valueOf(System.nanoTime());
+                logQ.put(log);
             }
 
-            logs.append("RET, false, " + System.nanoTime() + "\n");
+//            logs.append("RET, false, " + System.nanoTime() + "\n");
             return false;
         }
 
