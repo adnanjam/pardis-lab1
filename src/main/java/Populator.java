@@ -14,21 +14,21 @@ public class Populator {
         System.out.println();
     }
 
-    public static List<Integer> normal(){
+    public static List<Integer> normal() {
         List<Integer> population = new ArrayList<>();
         Random rand = new Random();
 
-        for(int i = 0; i < POPULATION_SIZE; i++){
-            population.add((int) Math.round((rand.nextGaussian() + mean * variance)  * MAX_VALUE));
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            population.add((int) Math.round((rand.nextGaussian() * Math.sqrt(variance) + mean) * MAX_VALUE));
         }
 
-        return  population;
+        return population;
     }
 
-    public static List<Integer> uniform(){
+    public static List<Integer> uniform() {
         List<Integer> population = new ArrayList<>();
         Random rand = new Random();
-        for(int i = 0; i < POPULATION_SIZE; i++){
+        for (int i = 0; i < POPULATION_SIZE; i++) {
             population.add(rand.nextInt(MAX_VALUE));
         }
         return population;
