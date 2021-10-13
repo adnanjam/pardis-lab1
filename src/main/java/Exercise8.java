@@ -12,7 +12,7 @@ public class Exercise8 {
 
         Random r = new Random();
         final int TOTAL_RUNS = 10000;
-        final int THREAD_COUNT = 2;
+        final int THREAD_COUNT = 8;
 
         ExecutorService service = Executors.newFixedThreadPool(THREAD_COUNT);
         double p;
