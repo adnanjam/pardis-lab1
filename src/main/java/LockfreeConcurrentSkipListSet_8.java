@@ -177,7 +177,6 @@ public class LockfreeConcurrentSkipListSet_8<T> {
         if (curr.key == v) {
             if (taskNumber == 4) {
                 logs.append("LIN_CON, " + System.nanoTime() + ", ");
-
             }
 
             logs.append("RET, true, " + System.nanoTime() + "\n");
