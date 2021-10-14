@@ -9,15 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LockfreeConcurrentSkipListSetTest {
 
-    @Test
-    void uniformDistributionTest() {
-        List<Integer> population = Populator.uniform();
-        LockfreeConcurrentSkipListSet<Integer> list = new LockfreeConcurrentSkipListSet<>();
-
-        for (int i = 0; i < population.size(); i++) {
-            list.add(population.get(i));
-        }
-    }
 
     @Test
     void parallelAdd() {
@@ -90,21 +81,5 @@ public class LockfreeConcurrentSkipListSetTest {
         for (int i = 0; i < 10; i++) {
             Assertions.assertFalse(list.contains(vals[i]));
         }
-    }
-
-    @Test
-    void normalDistributionTest() {
-
-        List<Integer> population = Populator.normal();
-        LockfreeConcurrentSkipListSet<Integer> list = new LockfreeConcurrentSkipListSet<>();
-
-        for (int i = 0; i < population.size(); i++) {
-            list.add(population.get(i));
-        }
-    }
-
-    @Test
-    void checkDistributionTest() {
-        // todo
     }
 }
